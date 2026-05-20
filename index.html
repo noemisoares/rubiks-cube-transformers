@@ -151,12 +151,20 @@
       );
       cubePlaceholder.add(arestas);
 
+      window.addEventListener("resize", () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      });
 
-
-
-
-
-      
+      function animate() {
+        requestAnimationFrame(animate);
+        controls.update();
+        cubePlaceholder.rotation.y += 0.004;
+        estrelas.rotation.y += 0.00015;
+        renderer.render(scene, camera);
+      }
+      animate();
     </script>
   </body>
 </html>
