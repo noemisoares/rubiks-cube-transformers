@@ -140,20 +140,23 @@
       const estrelas = criarEstrelas();
       renderer.setClearColor(0x000008);
 
+      const geoPlaceholder = new THREE.BoxGeometry(3, 3, 3);
+      const matPlaceholder = new THREE.MeshNormalMaterial({ wireframe: false });
+      const cubePlaceholder = new THREE.Mesh(geoPlaceholder, matPlaceholder);
+      scene.add(cubePlaceholder);
+
+      const arestas = new THREE.LineSegments(
+        new THREE.EdgesGeometry(geoPlaceholder),
+        new THREE.LineBasicMaterial({ color: 0x000000, linewidth: 2 }),
+      );
+      cubePlaceholder.add(arestas);
+
+
+
+
+
+
       
-
-
-
-
-
-
-
-
-
-
-
-
-
     </script>
   </body>
 </html>
