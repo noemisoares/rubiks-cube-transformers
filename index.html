@@ -24,6 +24,56 @@
         width: 100vw;
         height: 100vh;
       }
+      #hud {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        padding: 20px 28px;
+        pointer-events: none;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        z-index: 10;
+      }
+      #titulo {
+        color: #e8a020;
+        font-size: 22px;
+        font-weight: bold;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        text-shadow:
+          0 0 18px #e8a02088,
+          0 0 40px #e8a02044;
+      }
+
+      #subtitulo {
+        color: #4fc3f7;
+        font-size: 11px;
+        letter-spacing: 2px;
+        margin-top: 4px;
+        opacity: 0.8;
+      }
+
+      #instrucoes {
+        color: #aaa;
+        font-size: 11px;
+        text-align: right;
+        line-height: 1.9;
+        letter-spacing: 1px;
+      }
+      #instrucoes span {
+        color: #e8a020;
+      }
+      #hud::after {
+        content: "";
+        position: fixed;
+        bottom: 20px;
+        left: 28px;
+        width: 120px;
+        height: 2px;
+        background: linear-gradient(90deg, #e8a020, transparent);
+      }
     </style>
   </head>
 
@@ -63,6 +113,39 @@
       controls.dampingFactor = 0.05;
       controls.minDistance = 4;
       controls.maxDistance = 30;
+
+      function criarEstrelas() {
+        const qtd = 1000;
+        const posicoes = new Float32Array(qtd * 3);
+
+        for (let i = 0; i < qtd; i++) {
+          posicoes[i * 3] = (Math.random() - 0.5) * 300;
+          posicoes[i * 3 + 1] = (Math.random() - 0.5) * 300;
+          posicoes[i * 3 + 2] = (Math.random() - 0.5) * 300;
+        }
+
+        const geo = new THREE.BufferGeometry();
+        geo.setAttribute("position", new THREE.BufferAttribute(posicoes, 3));
+        const mat = new THREE.PointsMaterial({
+          color: 0xffffff,
+          size: 0.15,
+          sizeAttenuation: true,
+        });
+
+        const estrelas = new THREE.Points(geo, mat);
+        scene.add(estrelas);
+        return estrelas;
+      }
+
+      const estrelas = criarEstrelas();
+      renderer.setClearColor(0x000008);
+
+      
+
+
+
+
+
 
 
 
