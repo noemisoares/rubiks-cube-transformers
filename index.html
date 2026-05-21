@@ -5,9 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Autobots Rubik — Transformers Cube</title>
 
-    <script src="https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.165.0/examples/js/controls/OrbitControls.js"></script>
-
     <style>
       * {
         margin: 0;
@@ -46,7 +43,6 @@
           0 0 18px #e8a02088,
           0 0 40px #e8a02044;
       }
-
       #subtitulo {
         color: #4fc3f7;
         font-size: 11px;
@@ -54,7 +50,6 @@
         margin-top: 4px;
         opacity: 0.8;
       }
-
       #instrucoes {
         color: #aaa;
         font-size: 11px;
@@ -75,6 +70,9 @@
         background: linear-gradient(90deg, #e8a020, transparent);
       }
     </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/controls/OrbitControls.js"></script>
   </head>
 
   <body>
@@ -131,7 +129,6 @@
           size: 0.15,
           sizeAttenuation: true,
         });
-
         const estrelas = new THREE.Points(geo, mat);
         scene.add(estrelas);
         return estrelas;
@@ -140,27 +137,66 @@
       const estrelas = criarEstrelas();
       renderer.setClearColor(0x000008);
 
-      const geoPlaceholder = new THREE.BoxGeometry(3, 3, 3);
-      const matPlaceholder = new THREE.MeshNormalMaterial({ wireframe: false });
-      const cubePlaceholder = new THREE.Mesh(geoPlaceholder, matPlaceholder);
-      scene.add(cubePlaceholder);
-
-      const arestas = new THREE.LineSegments(
-        new THREE.EdgesGeometry(geoPlaceholder),
-        new THREE.LineBasicMaterial({ color: 0x000000, linewidth: 2 }),
-      );
-      cubePlaceholder.add(arestas);
-
       window.addEventListener("resize", () => {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
       });
 
+      const CORES = {
+        DIREITA: new THREE.MeshLambertMaterial({ color: 0xff6000 }),
+        ESQUERDA: new THREE.MeshLambertMaterial({ color: 0xcc0000 }),
+        CIMA: new THREE.MeshLambertMaterial({ color: 0xffffff }),
+        BAIXO: new THREE.MeshLambertMaterial({ color: 0xffee00 }),
+        FRENTE: new THREE.MeshLambertMaterial({ color: 0x009b48 }),
+        ATRAS: new THREE.MeshLambertMaterial({ color: 0x0046ad }),
+        INTERNO: new THREE.MeshLambertMaterial({ color: 0x1a1a1a }),
+      };
+
+      const luzAmbiente = new THREE.AmbientLight(0xffffff, 0.6);
+      scene.add(luzAmbiente);
+      const luzDirecional = new THREE.DirectionalLight(0xffffff, 0.8);
+      luzDirecional.position.set(10, 15, 10);
+      scene.add(luzDirecional);
+
+      function criarCubinho(x, y, z) {
+        const materiais = [
+          x === 1 ? CORES.DIREITA : CORES.INTERNO,
+          x === -1 ? CORES.ESQUERDA : CORES.INTERNO,
+          y === 1 ? CORES.CIMA : CORES.INTERNO,
+          y === -1 ? CORES.BAIXO : CORES.INTERNO,
+          z === 1 ? CORES.FRENTE : CORES.INTERNO,
+          z === -1 ? CORES.ATRAS : CORES.INTERNO,
+        ];
+        const geo = new THREE.BoxGeometry(0.98, 0.98, 0.98);
+        const mesh = new THREE.Mesh(geo, materiais);
+        mesh.position.set(x, y, z);
+        const arestas = new THREE.LineSegments(
+          new THREE.EdgesGeometry(geo),
+          new THREE.LineBasicMaterial({ color: 0x000000 }),
+        );
+        mesh.add(arestas);
+
+        scene.add(mesh);
+        return mesh;
+      }
+
+      const cubinhos = [];
+
+      for (let x = -1; x <= 1; x++) {
+        for (let y = -1; y <= 1; y++) {
+          for (let z = -1; z <= 1; z++) {
+            const cubinho = criarCubinho(x, y, z);
+            cubinhos.push(cubinho);
+          }
+        }
+      }
+
+      console.log("Cubinhos criados:", cubinhos.length);
+
       function animate() {
         requestAnimationFrame(animate);
         controls.update();
-        cubePlaceholder.rotation.y += 0.004;
         estrelas.rotation.y += 0.00015;
         renderer.render(scene, camera);
       }
