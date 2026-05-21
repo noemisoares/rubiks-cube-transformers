@@ -43,7 +43,6 @@
           0 0 18px #e8a02088,
           0 0 40px #e8a02044;
       }
-
       #subtitulo {
         color: #4fc3f7;
         font-size: 11px;
@@ -51,7 +50,6 @@
         margin-top: 4px;
         opacity: 0.8;
       }
-
       #instrucoes {
         color: #aaa;
         font-size: 11px;
@@ -139,17 +137,6 @@
       const estrelas = criarEstrelas();
       renderer.setClearColor(0x000008);
 
-      const geoPlaceholder = new THREE.BoxGeometry(3, 3, 3);
-      const matPlaceholder = new THREE.MeshNormalMaterial({ wireframe: false });
-      const cubePlaceholder = new THREE.Mesh(geoPlaceholder, matPlaceholder);
-      scene.add(cubePlaceholder);
-
-      const arestas = new THREE.LineSegments(
-        new THREE.EdgesGeometry(geoPlaceholder),
-        new THREE.LineBasicMaterial({ color: 0x000000, linewidth: 2 }),
-      );
-      cubePlaceholder.add(arestas);
-
       window.addEventListener("resize", () => {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
@@ -172,18 +159,31 @@
       luzDirecional.position.set(10, 15, 10);
       scene.add(luzDirecional);
 
-      
+      function criarCubinho(x, y, z) {
+        const materiais = [
+          x === 1 ? CORES.DIREITA : CORES.INTERNO,
+          x === -1 ? CORES.ESQUERDA : CORES.INTERNO,
+          y === 1 ? CORES.CIMA : CORES.INTERNO,
+          y === -1 ? CORES.BAIXO : CORES.INTERNO,
+          z === 1 ? CORES.FRENTE : CORES.INTERNO,
+          z === -1 ? CORES.ATRAS : CORES.INTERNO,
+        ];
+        const geo = new THREE.BoxGeometry(0.98, 0.98, 0.98);
+        const mesh = new THREE.Mesh(geo, materiais);
+        mesh.position.set(x, y, z);
+        const arestas = new THREE.LineSegments(
+          new THREE.EdgesGeometry(geo),
+          new THREE.LineBasicMaterial({ color: 0x000000 }),
+        );
+        mesh.add(arestas);
 
-
-
-
-
-
+        scene.add(mesh);
+        return mesh;
+      }
 
       function animate() {
         requestAnimationFrame(animate);
         controls.update();
-        cubePlaceholder.rotation.y += 0.004;
         estrelas.rotation.y += 0.00015;
         renderer.render(scene, camera);
       }
