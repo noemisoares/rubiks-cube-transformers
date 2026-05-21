@@ -70,6 +70,9 @@
         background: linear-gradient(90deg, #e8a020, transparent);
       }
     </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/controls/OrbitControls.js"></script>
   </head>
 
   <body>
@@ -85,9 +88,6 @@
         <span>SPACE</span> — embaralhar
       </div>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.165.0/examples/js/controls/OrbitControls.js"></script>
 
     <script>
       const scene = new THREE.Scene();
@@ -180,6 +180,19 @@
         scene.add(mesh);
         return mesh;
       }
+
+      const cubinhos = [];
+
+      for (let x = -1; x <= 1; x++) {
+        for (let y = -1; y <= 1; y++) {
+          for (let z = -1; z <= 1; z++) {
+            const cubinho = criarCubinho(x, y, z);
+            cubinhos.push(cubinho);
+          }
+        }
+      }
+
+      console.log("Cubinhos criados:", cubinhos.length);
 
       function animate() {
         requestAnimationFrame(animate);
