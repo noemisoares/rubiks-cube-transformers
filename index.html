@@ -12,7 +12,7 @@
         box-sizing: border-box;
       }
       body {
-        background: #000;
+        background: #000000;
         overflow: hidden;
         font-family: "Courier New", Courier, monospace;
       }
@@ -193,6 +193,76 @@
       }
 
       console.log("Cubinhos criados:", cubinhos.length);
+
+      // pra filtrar os 9 cubos de cima
+      function obterCubinhosDaFaceSuperior() {
+        const faceSuperior = cubinhos.filter(cubo => {
+          return cubo.position.y > 0.9;
+        });
+        return faceSuperior; //os 9
+      }
+
+      // pra filtrar os cubinhos e criar o grupo
+      let estaGirando = false;
+      window.addEventListener("keydown", (event) => {
+      
+        if (event.key.toLowerCase() === "u") {
+
+          if (estaGirando) return; 
+          estaGirando = true;
+
+          const meus9Cubinhos = obterCubinhosDaFaceSuperior();
+
+          console.log("Cubinhos detectados no topo:", meus9Cubinhos.length);
+          console.log("Lista de objetos:", meus9Cubinhos);
+          
+          const grupoMovel = new THREE.Group();
+          scene.add(grupoMovel);
+          meus9Cubinhos.forEach(cubo => {
+            grupoMovel.attach(cubo);
+          });
+
+          //tentando rotacionar lentinho
+          let frameAtual = 0;
+          const totalDeFrames = 30; // quanto mais frames, mais devagar
+          const fatiaDoAngulo = (Math.PI / 2) / totalDeFrames; 
+
+          function animarGiro() {
+
+            grupoMovel.rotation.y -= fatiaDoAngulo;
+            frameAtual++;
+  
+        
+            if (frameAtual < totalDeFrames) {
+              requestAnimationFrame(animarGiro);
+            } else {
+              grupoMovel.rotation.y = -Math.PI / 2;
+              finalizarGiro(); 
+            }
+          }
+
+          function finalizarGiro() {
+  
+            const filhosDoGrupo = [...grupoMovel.children];
+
+            filhosDoGrupo.forEach(cubo => {
+            // 1. Devolve pra cena global
+              scene.attach(cubo);
+              cubo.position.x = Math.round(cubo.position.x);
+              cubo.position.y = Math.round(cubo.position.y);
+              cubo.position.z = Math.round(cubo.position.z);
+            });
+            scene.remove(grupoMovel);
+            estaGirando = false;
+          }
+
+          animarGiro();
+          
+        }
+      });
+
+
+
 
       function animate() {
         requestAnimationFrame(animate);
