@@ -69,6 +69,88 @@
         height: 2px;
         background: linear-gradient(90deg, #e8a020, transparent);
       }
+      #telaVitoria {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 30px;
+        backdrop-filter: blur(5px);
+      }
+      #telaVitoria.ativa {
+        display: flex;
+        animation: aparecer 0.5s ease-out;
+      }
+      @keyframes aparecer {
+        from {
+          opacity: 0;
+          transform: scale(0.8);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+      #mensagemVitoria {
+        color: #e8a020;
+        font-size: 72px;
+        font-weight: bold;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        text-shadow:
+          0 0 20px #e8a020aa,
+          0 0 50px #e8a02066;
+        text-align: center;
+      }
+      #detalhesVitoria {
+        color: #4fc3f7;
+        font-size: 18px;
+        letter-spacing: 2px;
+        text-align: center;
+        line-height: 2;
+      }
+      #botoesVitoria {
+        display: flex;
+        gap: 20px;
+        margin-top: 20px;
+      }
+      .botao {
+        padding: 12px 30px;
+        background: #e8a020;
+        color: #000;
+        border: none;
+        font-size: 14px;
+        font-weight: bold;
+        letter-spacing: 2px;
+        cursor: pointer;
+        text-transform: uppercase;
+        transition: all 0.3s;
+        box-shadow: 0 0 15px #e8a02088;
+      }
+      .botao:hover {
+        background: #ffb84d;
+        box-shadow: 0 0 30px #ffb84daa;
+        transform: scale(1.05);
+      }
+      #iconeVitoria {
+      width: 150px; 
+      height: auto;
+      margin-bottom: -10px;
+      filter: drop-shadow(0 0 15px rgba(232, 160, 32, 0.8));
+      animation: pulsar 2s infinite alternate; 
+    }
+
+    @keyframes pulsar {
+      from { filter: drop-shadow(0 0 10px rgba(232, 160, 32, 0.5)); }
+      to { filter: drop-shadow(0 0 25px rgba(232, 160, 32, 1)); transform: scale(1.05); }
+    }
     </style>
 
     <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
@@ -87,6 +169,22 @@
         <span>u / f / r / d / b / l</span> — girar faces horário<br />
         <span>U / F / R / D / B / L</span> — girar faces anti-horário<br />
         <span>SPACE</span> — embaralhar
+      </div>
+    </div>
+
+    <div id="telaVitoria">
+      <img src="icons/autobots-icon.png" alt="Autobots Logo" id="iconeVitoria" />
+      
+      <div id="mensagemVitoria">VITÓRIA!</div>
+      
+      <div id="detalhesVitoria">
+        Parabéns! Você resolveu o cubo mágico!<br>
+        <span style="color: #e8a020;">Autobots, transformação completa!</span>
+      </div>
+      
+      <div id="botoesVitoria">
+        <button class="botao" onclick="novoJogo()">Novo Jogo</button>
+        <button class="botao" onclick="fecharVitoria()">Continuar</button>
       </div>
     </div>
 
@@ -152,6 +250,15 @@
         FRENTE: new THREE.MeshLambertMaterial({ color: 0x009b48 }),
         ATRAS: new THREE.MeshLambertMaterial({ color: 0x0046ad }),
         INTERNO: new THREE.MeshLambertMaterial({ color: 0x1a1a1a }),
+      };
+
+      const CORES_HEX = {
+        DIREITA: 0xff6000,
+        ESQUERDA: 0xcc0000,
+        CIMA: 0xffffff,
+        BAIXO: 0xffee00,
+        FRENTE: 0x009b48,
+        ATRAS: 0x0046ad,
       };
 
       const luzAmbiente = new THREE.AmbientLight(0xffffff, 0.6);
@@ -324,6 +431,10 @@
           grupoMovel = null;
           estaGirando = false;
 
+          if (verificarVitoria()) {
+            exibirVitoria();
+          }
+
           if(quandoTerminar){
             quandoTerminar();
           }
@@ -358,6 +469,79 @@
 
         executarProximoMovimento(0);
 
+      }
+
+      function obterCorDaMaterial(material) {
+        if (!material || !material.color) return null;
+        return material.color.getHex();
+      }
+
+      function verificarFaceCompleta(posicoes, eixo, valor, indiceCorEsperada) {
+        const corEsperada = Object.values(CORES_HEX)[indiceCorEsperada];
+        const cubinhosDaFace = cubinhos.filter(cubo => {
+          if (eixo === "x") return Math.abs(cubo.position.x - valor) < 0.5;
+          if (eixo === "y") return Math.abs(cubo.position.y - valor) < 0.5;
+          if (eixo === "z") return Math.abs(cubo.position.z - valor) < 0.5;
+        });
+
+        if (cubinhosDaFace.length !== 9) return false;
+
+        return cubinhosDaFace.every(cubo => {
+          const materiais = cubo.material || [];
+          const materiaisList = Array.isArray(materiais) ? materiais : [materiais];
+          
+          for (let material of materiaisList) {
+            const cor = obterCorDaMaterial(material);
+            if (cor === corEsperada) return true;
+          }
+          return false;
+        });
+      }
+
+      function verificarVitoria() {
+        const faces = [
+          { eixo: "x", valor: 1, corEsperada: "DIREITA" },
+          { eixo: "x", valor: -1, corEsperada: "ESQUERDA" },
+          { eixo: "y", valor: 1, corEsperada: "CIMA" },
+          { eixo: "y", valor: -1, corEsperada: "BAIXO" },
+          { eixo: "z", valor: 1, corEsperada: "FRENTE" },
+          { eixo: "z", valor: -1, corEsperada: "ATRAS" },
+        ];
+
+        for (let face of faces) {
+          const corEsperada = CORES_HEX[face.corEsperada];
+          const cubinhosDaFace = cubinhos.filter(cubo => {
+            if (face.eixo === "x") return Math.abs(cubo.position.x - face.valor) < 0.5;
+            if (face.eixo === "y") return Math.abs(cubo.position.y - face.valor) < 0.5;
+            if (face.eixo === "z") return Math.abs(cubo.position.z - face.valor) < 0.5;
+          });
+
+          if (cubinhosDaFace.length !== 9) return false;
+
+          const todasAsMesmasCores = cubinhosDaFace.every(cubo => {
+            const materiais = Array.isArray(cubo.material) ? cubo.material : [cubo.material];
+            return materiais.some(mat => obterCorDaMaterial(mat) === corEsperada);
+          });
+
+          if (!todasAsMesmasCores) return false;
+        }
+
+        return true;
+      }
+
+      function exibirVitoria() {
+        const telaVitoria = document.getElementById("telaVitoria");
+        telaVitoria.classList.add("ativa");
+      }
+
+      function fecharVitoria() {
+        const telaVitoria = document.getElementById("telaVitoria");
+        telaVitoria.classList.remove("ativa");
+      }
+
+      function novoJogo() {
+        fecharVitoria();
+        embaralhar();
       }
 
       window.addEventListener("keydown", (event) => {
