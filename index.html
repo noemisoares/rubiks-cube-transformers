@@ -284,11 +284,10 @@
       let estaGirando = false;
       let grupoMovel = null;
 
-      window.addEventListener("keydown", (event) => {
-        const tecla = event.key;
-
-        if (!CONFIG_FACES[tecla]) return;
-        if (estaGirando) return;
+      function girarFace(tecla, quandoTerminar){
+        
+        if (!CONFIG_FACES[tecla]) return false;
+        if (estaGirando) return false;
 
         estaGirando = true;
         let frameAtual = 0;
@@ -312,7 +311,7 @@
               (Math.PI / 2) * configAtual.sinalRotacao;
             finalizarGiro();
           }
-        }
+        }        
 
         function finalizarGiro() {
           [...grupoMovel.children].forEach((cubo) => {
@@ -324,8 +323,52 @@
           scene.remove(grupoMovel);
           grupoMovel = null;
           estaGirando = false;
+
+          if(quandoTerminar){
+            quandoTerminar();
+          }
+          
         }
         animarGiro();
+      }
+
+      function embaralhar(){
+        const movimentosPossiveis = ["u", "f", "r", "d", "b", "l", "U", "F", "R", "D", "B", "L"];
+        const quantidadeDeMovimentos = 20;
+        const sequencia = [];
+
+        for(let i = 0; i < quantidadeDeMovimentos; i++){
+          const indiceAleatorio = Math.floor(Math.random()*movimentosPossiveis.length);
+          const movimento = movimentosPossiveis[indiceAleatorio];
+
+          sequencia.push(movimento);
+        }
+        
+        function executarProximoMovimento(indice){
+          if(indice >= sequencia.length){
+            return;
+          }
+
+          const movimentoAtual = sequencia[indice];
+
+          girarFace(movimentoAtual, ()=>{
+            executarProximoMovimento(indice + 1);
+          })
+        }
+
+        executarProximoMovimento(0);
+
+      }
+
+      window.addEventListener("keydown", (event) => {
+        const tecla = event.key;
+
+        if(tecla == " "){
+          embaralhar();
+          return;
+        }
+
+        girarFace(tecla);
       });
 
       function animate() {
