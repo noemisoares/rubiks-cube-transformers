@@ -84,7 +84,8 @@
       <div id="instrucoes">
         <span>MOUSE</span> — orbitar câmera<br />
         <span>SCROLL</span> — zoom<br />
-        <span>U / F / R</span> — girar faces<br />
+        <span>u / f / r / d / b / l</span> — girar faces horário<br />
+        <span>U / F / R / D / B / L</span> — girar faces anti-horário<br />
         <span>SPACE</span> — embaralhar
       </div>
     </div>
@@ -192,29 +193,85 @@
         }
       }
 
-      console.log("Cubinhos criados:", cubinhos.length);
-
-      // tentativa de generalizar(adiciona mais comandos depois)
       const CONFIG_FACES = {
         u: {
-          eixoFiltro: 'y',
-          direcaoFiltro: 'positivo',
-          eixoRotacao: 'y',
-          sinalRotacao: -1          // sentido horário
+          eixoFiltro: "y",
+          direcaoFiltro: "positivo",
+          eixoRotacao: "y",
+          sinalRotacao: -1,
         },
         f: {
-          eixoFiltro: 'z',
-          direcaoFiltro: 'positivo', 
-          eixoRotacao: 'z',
-          sinalRotacao: -1          
-        }
+          eixoFiltro: "z",
+          direcaoFiltro: "positivo",
+          eixoRotacao: "z",
+          sinalRotacao: -1,
+        },
+        r: {
+          eixoFiltro: "x",
+          direcaoFiltro: "positivo",
+          eixoRotacao: "x",
+          sinalRotacao: -1,
+        },
+        d: {
+          eixoFiltro: "y",
+          direcaoFiltro: "negativo",
+          eixoRotacao: "y",
+          sinalRotacao: -1,
+        },
+        b: {
+          eixoFiltro: "z",
+          direcaoFiltro: "negativo",
+          eixoRotacao: "z",
+          sinalRotacao: -1,
+        },
+        l: {
+          eixoFiltro: "x",
+          direcaoFiltro: "negativo",
+          eixoRotacao: "x",
+          sinalRotacao: -1,
+        },
+        U: {
+          eixoFiltro: "y",
+          direcaoFiltro: "positivo",
+          eixoRotacao: "y",
+          sinalRotacao: 1,
+        },
+        F: {
+          eixoFiltro: "z",
+          direcaoFiltro: "positivo",
+          eixoRotacao: "z",
+          sinalRotacao: 1,
+        },
+        R: {
+          eixoFiltro: "x",
+          direcaoFiltro: "positivo",
+          eixoRotacao: "x",
+          sinalRotacao: 1,
+        },
+        D: {
+          eixoFiltro: "y",
+          direcaoFiltro: "negativo",
+          eixoRotacao: "y",
+          sinalRotacao: 1,
+        },
+        B: {
+          eixoFiltro: "z",
+          direcaoFiltro: "negativo",
+          eixoRotacao: "z",
+          sinalRotacao: 1,
+        },
+        L: {
+          eixoFiltro: "x",
+          direcaoFiltro: "negativo",
+          eixoRotacao: "x",
+          sinalRotacao: 1,
+        },
       };
 
       function obterCubinhosDaFace(config) {
-        return cubinhos.filter(cubo => {
+        return cubinhos.filter((cubo) => {
           const valorPosicao = cubo.position[config.eixoFiltro];
-    
-          if (config.direcaoFiltro === 'positivo') {
+          if (config.direcaoFiltro === "positivo") {
             return valorPosicao > 0.9;
           } else {
             return valorPosicao < -0.9;
@@ -222,66 +279,54 @@
         });
       }
 
-      let frameAtual = 0;
-      const totalDeFrames = 30; 
-      const fatiaDoAngulo = (Math.PI / 2) / totalDeFrames; 
-
+      const totalDeFrames = 30;
+      const fatiaDoAngulo = Math.PI / 2 / totalDeFrames;
       let estaGirando = false;
-      let configAtual = null;
-      window.addEventListener("keydown", (event) => {
-        const tecla = event.key.toLowerCase();
-  
-        if (!CONFIG_FACES[tecla]) return;
-        if (estaGirando) return; 
+      let grupoMovel = null;
 
- 
+      window.addEventListener("keydown", (event) => {
+        const tecla = event.key;
+
+        if (!CONFIG_FACES[tecla]) return;
+        if (estaGirando) return;
+
         estaGirando = true;
-        frameAtual = 0; 
-           
-        configAtual = CONFIG_FACES[tecla];
-  
- 
+        let frameAtual = 0;
+        const configAtual = CONFIG_FACES[tecla];
+
         const meus9Cubinhos = obterCubinhosDaFace(configAtual);
-  
-        
+
         grupoMovel = new THREE.Group();
         scene.add(grupoMovel);
-        meus9Cubinhos.forEach(cubo => {
-          grupoMovel.attach(cubo);
-        });
-        
+        meus9Cubinhos.forEach((cubo) => grupoMovel.attach(cubo));
+
         function animarGiro() {
-  
-          grupoMovel.rotation[configAtual.eixoRotacao] += fatiaDoAngulo * configAtual.sinalRotacao;
+          grupoMovel.rotation[configAtual.eixoRotacao] +=
+            fatiaDoAngulo * configAtual.sinalRotacao;
           frameAtual++;
 
           if (frameAtual < totalDeFrames) {
             requestAnimationFrame(animarGiro);
           } else {
-            const anguloFinalExato = (Math.PI / 2) * configAtual.sinalRotacao;
-            grupoMovel.rotation[configAtual.eixoRotacao] = anguloFinalExato;
+            grupoMovel.rotation[configAtual.eixoRotacao] =
+              (Math.PI / 2) * configAtual.sinalRotacao;
             finalizarGiro();
           }
         }
 
         function finalizarGiro() {
-  
-          const filhosDoGrupo = [...grupoMovel.children];
-
-          filhosDoGrupo.forEach(cubo => {
-            // 1. Devolve pra cena global
+          [...grupoMovel.children].forEach((cubo) => {
             scene.attach(cubo);
             cubo.position.x = Math.round(cubo.position.x);
             cubo.position.y = Math.round(cubo.position.y);
             cubo.position.z = Math.round(cubo.position.z);
-            });
-            scene.remove(grupoMovel);
-            estaGirando = false;
+          });
+          scene.remove(grupoMovel);
+          grupoMovel = null;
+          estaGirando = false;
         }
-
         animarGiro();
       });
-
 
       function animate() {
         requestAnimationFrame(animate);
