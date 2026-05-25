@@ -31,6 +31,7 @@
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
+        gap: 24px;
         z-index: 10;
       }
       #titulo {
@@ -49,6 +50,73 @@
         letter-spacing: 2px;
         margin-top: 4px;
         opacity: 0.8;
+      }
+      #painelDireita {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 12px;
+      }
+      #contadorMovimentos {
+        min-width: 160px;
+        padding: 14px 16px;
+        position: relative;
+        overflow: hidden;
+        border-radius: 18px;
+        text-align: right;
+        background:
+          linear-gradient(135deg, rgba(10, 16, 28, 0.96), rgba(18, 28, 44, 0.8)),
+          radial-gradient(circle at top left, rgba(232, 160, 32, 0.2), transparent 35%);
+        border: 1px solid rgba(232, 160, 32, 0.35);
+        box-shadow:
+          0 0 0 1px rgba(79, 195, 247, 0.12),
+          0 0 28px rgba(232, 160, 32, 0.16),
+          0 18px 40px rgba(0, 0, 0, 0.48);
+        backdrop-filter: blur(12px);
+      }
+      #contadorMovimentos::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.06), transparent);
+        transform: translateX(-100%);
+        animation: shimmer 4s linear infinite;
+      }
+      #contadorMovimentos::after {
+        content: "";
+        position: absolute;
+        left: 14px;
+        right: 14px;
+        bottom: 10px;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(79, 195, 247, 0.8), transparent);
+      }
+      @keyframes shimmer {
+        100% {
+          transform: translateX(100%);
+        }
+      }
+      #rotuloContador {
+        position: relative;
+        z-index: 1;
+        color: #bfeaff;
+        font-size: 9px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+        font-weight: 800;
+      }
+      #valorMovimentos {
+        position: relative;
+        z-index: 1;
+        color: #ffe1a6;
+        font-size: 34px;
+        font-weight: 800;
+        letter-spacing: 1.5px;
+        line-height: 1;
+        text-shadow:
+          0 0 12px rgba(232, 160, 32, 0.55),
+          0 0 28px rgba(79, 195, 247, 0.2);
       }
       #instrucoes {
         color: #aaa;
@@ -163,12 +231,18 @@
         <div id="titulo">Autobots Rubik</div>
         <div id="subtitulo">TRANSFORMERS EDITION — THREE.JS</div>
       </div>
-      <div id="instrucoes">
-        <span>MOUSE</span> — orbitar câmera<br />
-        <span>SCROLL</span> — zoom<br />
-        <span>u / f / r / d / b / l</span> — girar faces horário<br />
-        <span>U / F / R / D / B / L</span> — girar faces anti-horário<br />
-        <span>SPACE</span> — embaralhar
+      <div id="painelDireita">
+        <div id="contadorMovimentos">
+          <div id="rotuloContador">Movimentos</div>
+          <div id="valorMovimentos">0</div>
+        </div>
+        <div id="instrucoes">
+          <span>MOUSE</span> — orbitar câmera<br />
+          <span>SCROLL</span> — zoom<br />
+          <span>u / f / r / d / b / l</span> — girar faces horário<br />
+          <span>U / F / R / D / B / L</span> — girar faces anti-horário<br />
+          <span>SPACE</span> — embaralhar
+        </div>
       </div>
     </div>
 
@@ -390,9 +464,19 @@
       const fatiaDoAngulo = Math.PI / 2 / totalDeFrames;
       let estaGirando = false;
       let grupoMovel = null;
+      let contadorMovimentos = 0;
+      const elementoContador = document.getElementById("valorMovimentos");
 
-      function girarFace(tecla, quandoTerminar){
-        
+      function atualizarContador() {
+        elementoContador.textContent = contadorMovimentos.toString();
+      }
+
+      function resetarContador() {
+        contadorMovimentos = 0;
+        atualizarContador();
+      }
+
+      function girarFace(tecla, quandoTerminar, registrarMovimento = true) {
         if (!CONFIG_FACES[tecla]) return false;
         if (estaGirando) return false;
 
@@ -431,6 +515,11 @@
           grupoMovel = null;
           estaGirando = false;
 
+          if (registrarMovimento) {
+            contadorMovimentos += 1;
+            atualizarContador();
+          }
+
           if (verificarVitoria()) {
             exibirVitoria();
           }
@@ -446,6 +535,7 @@
       function embaralhar(){
         if(estaGirando || estaEmbaralhando) return;
 
+        resetarContador();
         estaEmbaralhando = true;
 
         const movimentosPossiveis = ["u", "f", "r", "d", "b", "l", "U", "F", "R", "D", "B", "L"];
@@ -469,7 +559,7 @@
 
           girarFace(movimentoAtual, ()=>{
             executarProximoMovimento(indice + 1);
-          })
+          }, false)
         }
 
         executarProximoMovimento(0);
@@ -548,6 +638,8 @@
         fecharVitoria();
         embaralhar();
       }
+
+      resetarContador();
 
       window.addEventListener("keydown", (event) => {
         if(estaGirando) return;
