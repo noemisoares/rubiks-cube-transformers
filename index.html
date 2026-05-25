@@ -442,8 +442,12 @@
         }
         animarGiro();
       }
-
+      let estaEmbaralhando = false;
       function embaralhar(){
+        if(estaGirando || estaEmbaralhando) return;
+
+        estaEmbaralhando = true;
+
         const movimentosPossiveis = ["u", "f", "r", "d", "b", "l", "U", "F", "R", "D", "B", "L"];
         const quantidadeDeMovimentos = 20;
         const sequencia = [];
@@ -457,6 +461,7 @@
         
         function executarProximoMovimento(indice){
           if(indice >= sequencia.length){
+            estaEmbaralhando = false;
             return;
           }
 
@@ -545,6 +550,8 @@
       }
 
       window.addEventListener("keydown", (event) => {
+        if(estaGirando) return;
+
         const tecla = event.key;
 
         if(tecla == " "){
