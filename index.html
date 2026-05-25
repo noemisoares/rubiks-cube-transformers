@@ -5,16 +5,78 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Autobots Rubik — Transformers Cube</title>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Orbitron:wght@500;700;800&family=Rajdhani:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
     <style>
+      :root {
+        --font-ui: "Rajdhani", "Segoe UI", sans-serif;
+        --font-title: "Bebas Neue", "Orbitron", "Impact", sans-serif;
+        --bg-body: #020814;
+        --bg-hud: rgba(8, 14, 24, 0.84);
+        --panel-border: rgba(232, 160, 32, 0.35);
+        --accent-primary: #e8a020;
+        --accent-secondary: #4fc3f7;
+        --accent-strong: #ffe1a6;
+        --text-main: #f4fbff;
+        --text-muted: #b9d9eb;
+        --line-glow: rgba(79, 195, 247, 0.85);
+        --canvas-clear: #000008;
+      }
+
+      body[data-theme="autobots"] {
+        --bg-body: #020814;
+        --bg-hud: rgba(8, 14, 24, 0.84);
+        --panel-border: rgba(232, 160, 32, 0.4);
+        --accent-primary: #e8a020;
+        --accent-secondary: #4fc3f7;
+        --accent-strong: #ffe1a6;
+        --text-main: #f4fbff;
+        --text-muted: #b9d9eb;
+        --line-glow: rgba(79, 195, 247, 0.85);
+        --canvas-clear: #000008;
+      }
+
+      body[data-theme="decepticons"] {
+        --bg-body: #090308;
+        --bg-hud: rgba(20, 5, 12, 0.86);
+        --panel-border: rgba(255, 77, 109, 0.45);
+        --accent-primary: #ff4d6d;
+        --accent-secondary: #8f7cff;
+        --accent-strong: #ffd6de;
+        --text-main: #fff8fb;
+        --text-muted: #e5c7d1;
+        --line-glow: rgba(255, 77, 109, 0.85);
+        --canvas-clear: #05020c;
+      }
+
+      body[data-theme="energon"] {
+        --bg-body: #030b13;
+        --bg-hud: rgba(5, 16, 24, 0.86);
+        --panel-border: rgba(124, 240, 255, 0.45);
+        --accent-primary: #7cf0ff;
+        --accent-secondary: #ffd166;
+        --accent-strong: #fff1cc;
+        --text-main: #f2feff;
+        --text-muted: #c7f6ff;
+        --line-glow: rgba(124, 240, 255, 0.85);
+        --canvas-clear: #01050b;
+      }
+
       * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
       }
       body {
-        background: #000000;
+        background: var(--bg-body);
         overflow: hidden;
-        font-family: "Courier New", Courier, monospace;
+        font-family: var(--font-ui);
+        color: var(--text-main);
       }
       canvas {
         display: block;
@@ -35,27 +97,108 @@
         z-index: 10;
       }
       #titulo {
-        color: #e8a020;
-        font-size: 22px;
-        font-weight: bold;
-        letter-spacing: 3px;
+        color: var(--accent-primary);
+        font-family: var(--font-title);
+        font-size: 28px;
+        font-weight: 400;
+        letter-spacing: 4px;
         text-transform: uppercase;
         text-shadow:
-          0 0 18px #e8a02088,
-          0 0 40px #e8a02044;
+          0 0 18px color-mix(in srgb, var(--accent-primary) 55%, transparent),
+          0 0 40px color-mix(in srgb, var(--accent-primary) 28%, transparent);
       }
       #subtitulo {
-        color: #4fc3f7;
-        font-size: 11px;
-        letter-spacing: 2px;
+        color: var(--accent-secondary);
+        font-family: var(--font-ui);
+        font-size: 12px;
+        letter-spacing: 2.5px;
         margin-top: 4px;
-        opacity: 0.8;
+        opacity: 0.9;
+        text-transform: uppercase;
+      }
+      #fraseHud {
+        color: rgba(255, 255, 255, 0.86);
+        font-family: var(--font-title);
+        font-size: 14px;
+        letter-spacing: 1.6px;
+        line-height: 1.55;
+        margin-top: 10px;
+        max-width: 480px;
+        opacity: 0.92;
+        font-style: italic;
+        text-transform: uppercase;
+        text-shadow:
+          0 0 12px color-mix(in srgb, var(--accent-primary) 30%, transparent),
+          0 0 24px color-mix(in srgb, var(--accent-secondary) 18%, transparent);
       }
       #painelDireita {
         display: flex;
         flex-direction: column;
         align-items: flex-end;
         gap: 12px;
+        pointer-events: auto;
+      }
+      #themeControls {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 8px;
+        pointer-events: auto;
+      }
+      #themeLabel {
+        color: var(--text-muted);
+        font-size: 10px;
+        letter-spacing: 2.5px;
+        text-transform: uppercase;
+        font-weight: 700;
+      }
+      #botoesTemas {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+      .temaBotao {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(4, 8, 16, 0.88);
+        color: var(--text-main);
+        font-family: var(--font-ui);
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        padding: 8px 12px;
+        border-radius: 999px;
+        cursor: pointer;
+        transition:
+          transform 0.2s ease,
+          border-color 0.2s ease,
+          background 0.2s ease,
+          color 0.2s ease;
+      }
+      .temaBotao:hover {
+        transform: translateY(-1px);
+        border-color: var(--panel-border);
+      }
+      .temaBotao.ativa {
+        background: var(--accent-primary);
+        color: #090d14;
+        border-color: transparent;
+        box-shadow: 0 0 18px color-mix(in srgb, var(--accent-primary) 45%, transparent);
+      }
+      .temaSwatchGroup {
+        display: inline-flex;
+        gap: 4px;
+      }
+      .temaSwatch {
+        width: 12px;
+        height: 12px;
+        border-radius: 4px;
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.14);
       }
       #contadorMovimentos {
         min-width: 160px;
@@ -65,12 +208,12 @@
         border-radius: 18px;
         text-align: right;
         background:
-          linear-gradient(135deg, rgba(10, 16, 28, 0.96), rgba(18, 28, 44, 0.8)),
-          radial-gradient(circle at top left, rgba(232, 160, 32, 0.2), transparent 35%);
-        border: 1px solid rgba(232, 160, 32, 0.35);
+          linear-gradient(135deg, var(--bg-hud), color-mix(in srgb, var(--bg-hud) 82%, black)),
+          radial-gradient(circle at top left, color-mix(in srgb, var(--accent-primary) 20%, transparent), transparent 35%);
+        border: 1px solid var(--panel-border);
         box-shadow:
-          0 0 0 1px rgba(79, 195, 247, 0.12),
-          0 0 28px rgba(232, 160, 32, 0.16),
+          0 0 0 1px color-mix(in srgb, var(--accent-secondary) 18%, transparent),
+          0 0 28px color-mix(in srgb, var(--accent-primary) 16%, transparent),
           0 18px 40px rgba(0, 0, 0, 0.48);
         backdrop-filter: blur(12px);
       }
@@ -89,7 +232,7 @@
         right: 14px;
         bottom: 10px;
         height: 1px;
-        background: linear-gradient(90deg, transparent, rgba(79, 195, 247, 0.8), transparent);
+        background: linear-gradient(90deg, transparent, var(--line-glow), transparent);
       }
       @keyframes shimmer {
         100% {
@@ -99,7 +242,7 @@
       #rotuloContador {
         position: relative;
         z-index: 1;
-        color: #bfeaff;
+        color: var(--text-main);
         font-size: 9px;
         letter-spacing: 3px;
         text-transform: uppercase;
@@ -109,24 +252,24 @@
       #valorMovimentos {
         position: relative;
         z-index: 1;
-        color: #ffe1a6;
+        color: var(--accent-strong);
         font-size: 34px;
         font-weight: 800;
         letter-spacing: 1.5px;
         line-height: 1;
         text-shadow:
-          0 0 12px rgba(232, 160, 32, 0.55),
-          0 0 28px rgba(79, 195, 247, 0.2);
+          0 0 12px color-mix(in srgb, var(--accent-primary) 55%, transparent),
+          0 0 28px color-mix(in srgb, var(--accent-secondary) 24%, transparent);
       }
       #instrucoes {
-        color: #aaa;
+        color: var(--text-muted);
         font-size: 11px;
         text-align: right;
         line-height: 1.9;
         letter-spacing: 1px;
       }
       #instrucoes span {
-        color: #e8a020;
+        color: var(--accent-primary);
       }
       #hud::after {
         content: "";
@@ -135,7 +278,7 @@
         left: 28px;
         width: 120px;
         height: 2px;
-        background: linear-gradient(90deg, #e8a020, transparent);
+        background: linear-gradient(90deg, var(--accent-primary), transparent);
       }
       #telaVitoria {
         display: none;
@@ -167,18 +310,18 @@
         }
       }
       #mensagemVitoria {
-        color: #e8a020;
+        color: var(--accent-primary);
         font-size: 72px;
         font-weight: bold;
         letter-spacing: 4px;
         text-transform: uppercase;
         text-shadow:
-          0 0 20px #e8a020aa,
-          0 0 50px #e8a02066;
+          0 0 20px color-mix(in srgb, var(--accent-primary) 66%, transparent),
+          0 0 50px color-mix(in srgb, var(--accent-primary) 40%, transparent);
         text-align: center;
       }
       #detalhesVitoria {
-        color: #4fc3f7;
+        color: var(--accent-secondary);
         font-size: 18px;
         letter-spacing: 2px;
         text-align: center;
@@ -230,8 +373,38 @@
       <div>
         <div id="titulo">Autobots Rubik</div>
         <div id="subtitulo">TRANSFORMERS EDITION — THREE.JS</div>
+        <div id="fraseHud">Antes do tempo começar, havia o cubo</div>
       </div>
       <div id="painelDireita">
+        <div id="themeControls">
+          <div id="themeLabel">Temas</div>
+          <div id="botoesTemas">
+            <button class="temaBotao ativa" data-theme="autobots">
+              <span class="temaSwatchGroup">
+                <span class="temaSwatch"></span>
+                <span class="temaSwatch"></span>
+                <span class="temaSwatch"></span>
+              </span>
+              <span>Autobots</span>
+            </button>
+            <button class="temaBotao" data-theme="decepticons">
+              <span class="temaSwatchGroup">
+                <span class="temaSwatch"></span>
+                <span class="temaSwatch"></span>
+                <span class="temaSwatch"></span>
+              </span>
+              <span>Decepticons</span>
+            </button>
+            <button class="temaBotao" data-theme="energon">
+              <span class="temaSwatchGroup">
+                <span class="temaSwatch"></span>
+                <span class="temaSwatch"></span>
+                <span class="temaSwatch"></span>
+              </span>
+              <span>Energon</span>
+            </button>
+          </div>
+        </div>
         <div id="contadorMovimentos">
           <div id="rotuloContador">Movimentos</div>
           <div id="valorMovimentos">0</div>
@@ -279,6 +452,114 @@
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
       document.body.appendChild(renderer.domElement);
 
+      const themeButtons = document.querySelectorAll(".temaBotao");
+      let estrelasMaterial = null;
+
+      const THEMES = {
+        autobots: {
+          clearHex: 0x000008,
+          starHex: 0xffffff,
+          ambientHex: 0xffffff,
+          directionalHex: 0xffffff,
+          rightHex: 0xff6000,
+          leftHex: 0xcc0000,
+          upHex: 0xffffff,
+          downHex: 0xffee00,
+          frontHex: 0x009b48,
+          backHex: 0x0046ad,
+          internalHex: 0x1a1a1a,
+        },
+        decepticons: {
+          clearHex: 0x09030d,
+          starHex: 0xfff1fc,
+          ambientHex: 0xffd7f5,
+          directionalHex: 0xff2fb8,
+          rightHex: 0xff4dd8,
+          leftHex: 0x6b0d47,
+          upHex: 0xffffff,
+          downHex: 0x9a33ff,
+          frontHex: 0xff3d3d,
+          backHex: 0x560f73,
+          internalHex: 0x120211,
+        },
+        energon: {
+          clearHex: 0x020611,
+          starHex: 0xe8ffff,
+          ambientHex: 0x9ffbf9,
+          directionalHex: 0x12e4ff,
+          rightHex: 0x12e4ff,
+          leftHex: 0x0a4d8c,
+          upHex: 0xd9fff9,
+          downHex: 0x39ff57,
+          frontHex: 0x39ff57,
+          backHex: 0x0e66ff,
+          internalHex: 0x03111c,
+        },
+      };
+
+      function hexParaCss(valorHex) {
+        return `#${valorHex.toString(16).padStart(6, "0")}`;
+      }
+
+      function atualizarSwatchesTemas() {
+        themeButtons.forEach((botao) => {
+          const tema = botao.dataset.theme;
+          const temaAtual = THEMES[tema] || THEMES.autobots;
+          const swatches = botao.querySelectorAll(".temaSwatch");
+
+          if (swatches.length >= 1) {
+            swatches[0].style.backgroundColor = hexParaCss(temaAtual.rightHex);
+          }
+
+          if (swatches.length >= 2) {
+            swatches[1].style.backgroundColor = hexParaCss(temaAtual.frontHex);
+          }
+
+          if (swatches.length >= 3) {
+            swatches[2].style.backgroundColor = hexParaCss(temaAtual.backHex);
+          }
+        });
+      }
+
+      function aplicarTema(tema) {
+        const temaAtual = THEMES[tema] || THEMES.autobots;
+        document.body.dataset.theme = tema;
+
+        themeButtons.forEach((botao) => {
+          botao.classList.toggle("ativa", botao.dataset.theme === tema);
+        });
+
+        atualizarSwatchesTemas();
+
+        renderer.setClearColor(temaAtual.clearHex);
+
+        if (estrelasMaterial) {
+          estrelasMaterial.color.setHex(temaAtual.starHex);
+        }
+
+        CORES.DIREITA.color.setHex(temaAtual.rightHex);
+        CORES.ESQUERDA.color.setHex(temaAtual.leftHex);
+        CORES.CIMA.color.setHex(temaAtual.upHex);
+        CORES.BAIXO.color.setHex(temaAtual.downHex);
+        CORES.FRENTE.color.setHex(temaAtual.frontHex);
+        CORES.ATRAS.color.setHex(temaAtual.backHex);
+        CORES.INTERNO.color.setHex(temaAtual.internalHex);
+
+        CORES_HEX.DIREITA = temaAtual.rightHex;
+        CORES_HEX.ESQUERDA = temaAtual.leftHex;
+        CORES_HEX.CIMA = temaAtual.upHex;
+        CORES_HEX.BAIXO = temaAtual.downHex;
+        CORES_HEX.FRENTE = temaAtual.frontHex;
+        CORES_HEX.ATRAS = temaAtual.backHex;
+
+        luzAmbiente.color.setHex(temaAtual.ambientHex);
+        luzDirecional.color.setHex(temaAtual.directionalHex);
+      }
+
+      themeButtons.forEach((botao) => {
+        botao.addEventListener("click", () => aplicarTema(botao.dataset.theme));
+      });
+
       const controls = new THREE.OrbitControls(camera, renderer.domElement);
       controls.enableDamping = true;
       controls.dampingFactor = 0.05;
@@ -302,13 +583,13 @@
           size: 0.15,
           sizeAttenuation: true,
         });
+        estrelasMaterial = mat;
         const estrelas = new THREE.Points(geo, mat);
         scene.add(estrelas);
         return estrelas;
       }
 
       const estrelas = criarEstrelas();
-      renderer.setClearColor(0x000008);
 
       window.addEventListener("resize", () => {
         camera.aspect = window.innerWidth / window.innerHeight;
@@ -326,7 +607,7 @@
         INTERNO: new THREE.MeshLambertMaterial({ color: 0x1a1a1a }),
       };
 
-      const CORES_HEX = {
+      let CORES_HEX = {
         DIREITA: 0xff6000,
         ESQUERDA: 0xcc0000,
         CIMA: 0xffffff,
@@ -340,6 +621,8 @@
       const luzDirecional = new THREE.DirectionalLight(0xffffff, 0.8);
       luzDirecional.position.set(10, 15, 10);
       scene.add(luzDirecional);
+
+      aplicarTema("autobots");
 
       function criarCubinho(x, y, z) {
         const materiais = [
