@@ -68,11 +68,11 @@ O trabalho foi organizado em 10 issues no GitHub. Cada integrante atuou em sua p
 
 | Integrante | Issues | Responsabilidade |
 | :--- | :--- | :--- |
-| Noemi Soares Gonçalves Da Silva | #1, #2, #6 | Setup inicial, cubinhos 3x3x3, 6 faces rotacionáveis [cite: 224] |
-| Ricardo Nery De Brito Junior | #3, #4 |Rotação face superior (U) e face frontal (F) [cite: 224] |
-| Willian Rodrigues Lima Silva | #5, #7 | Interpolação suave de rotação e botão embaralhar [cite: 224] |
-| Gabriel De Souza Leão Araújo | #8 | Detecção de vitória e documentação (README) [cite: 224] |
-| Tarsila Amado Alves De Brito | #9, #10 | Contador de movimentos e tema visual Transformers [cite: 224] |
+| Noemi Soares Gonçalves Da Silva | #1, #2, #6 | Setup inicial, cubinhos 3x3x3, 6 faces rotacionáveis |
+| Ricardo Nery De Brito Junior | #3, #4 |Rotação face superior (U) e face frontal (F) |
+| Willian Rodrigues Lima Silva | #5, #7 | Interpolação suave de rotação e botão embaralhar |
+| Gabriel De Souza Leão Araújo | #8 | Detecção de vitória e documentação (README) |
+| Tarsila Amado Alves De Brito | #9, #10 | Contador de movimentos e tema visual Transformers |
 
 ### 3.1 Noemi Soares Gonçalves Da Silva — Issues #1, #2 e #6 
 
