@@ -1,6 +1,3 @@
-# rubiks-cube-transformers
-Criar uma simulação interativa de um cubo mágico (Rubik’s Cube) em Three.js, com câmera 3D e animação suave ao girar as faces.
-
 # Autobots Rubik
 **Simulação Interativa de Cubo Mágico 3D com Three.js — Transformers Edition**
 
@@ -155,18 +152,9 @@ Após cada giro, os cubinhos precisavam ser transferidos de volta à cena global
 * Compatibilidade de versão do Three.js e erro de carregamento da CDN, conforme seção 4.1;
 * Entendimento da ordem fixa de materiais do BoxGeometry (+X, -X, +Y, -Y, +Z, -Z), essencial para o correto colorimento das faces de cada cubinho.
 
-**Ricardo Nery De Brito Junior (Issues #3, #4)**
-*[PREENCHER: dificuldades encontradas, se houver.]*
-
-**Willian Rodrigues Lima Silva (Issues #5, #7)**
-*[PREENCHER]*
-
 **Gabriel De Souza Leão Araújo (Issue #8)**
 * **Imprecisão de Ponto Flutuante:** Evitar falsos negativos na validação de vitória causados pelo acúmulo de distorções decimais (ex: 0.9999) nas coordenadas espaciais após múltiplas rotações. A solução exigiu substituir a validação de igualdade estrita por uma fórmula de margem de tolerância geométrica (Math.abs(...) < 0.5).
 * **Otimização de Memória na Validação:** Ineficiência estrutural ao tentar comparar instâncias completas da classe Material do Three.js para checar as faces resolvidas. Foi necessário modelar uma função de extração para isolar os dados hexadecimais puros (CORES_HEX), permitindo uma comparação algorítmica exata e leve.
-
-**Tarsila Amado Alves De Brito (Issues #9, #10)**
-*[PREENCHER]*
 
 ## 5. Uso de IA's
 
